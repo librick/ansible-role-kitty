@@ -1,0 +1,14 @@
+# The username of the user for which Kitty will be configured
+kitty_user: "{{ ansible_user }}"
+# The value with which to populate the $XDG_CONFIG_HOME environment variable
+# when installing Kitty for the user specified by kitty_user
+# See: https://specifications.freedesktop.org/basedir-spec/basedir-spec-latest.html 
+kitty_xdg_config_home: "/home/{{ kitty_user }}/.config"
+# The titlebar color of Kitty windows on Wayland
+kitty_titlebar_color: "#303443"
+# The kitty font family
+# I like using "FiraCode Nerd Font Mono"
+# See: https://github.com/ryanoasis/nerd-fonts
+kitty_font: Liberation Mono
+# The kitty font size
+kitty_font_size: "14.0"

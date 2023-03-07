@@ -1,0 +1,68 @@
+---
+
+- name: Debug; print kitty_user.
+  ansible.builtin.debug:
+    msg: "Installing/configuring Kitty for user with username \"{{ kitty_user }}\""
+
+- name: Debug; print kitty_xdg_config_home.
+  ansible.builtin.debug:
+    msg: "Installing/configuring Kitty with XDG_CONFIG_HOME={{ kitty_xdg_config_home }}"
+
+- name: Ensure kitty apt package is installed.
+  ansible.builtin.apt:
+    name: kitty
+    state: present
+  become: true
+  become_user: root
+
+# The acl apt package includes the setfacl binary
+# which is required by Ansible to handle permissions when using
+# become_user with non-root users.
+# See: https://docs.ansible.com/ansible/latest/playbook_guide/playbooks_privilege_escalation.html#risks-of-becoming-an-unprivileged-user.
+# See: https://packages.debian.org/sid/acl
+- name: Ensure acl apt package is installed.
+  ansible.builtin.apt:
+    name: acl
+    state: present
+  become: true
+  become_user: root
+
+- name: Ensure .config/kitty directory exists.
+  ansible.builtin.file:
+    path: "{{ kitty_xdg_config_home }}/kitty"
+    mode: 0755
+    owner: "{{ kitty_user }}"
+    group: "{{ kitty_user }}"
+    state: directory
+  become: true
+  become_user: root
+
+- name: Ensure kitty.conf file is in place.
+  ansible.builtin.template:
+    src: kitty.conf.j2
+    dest: "{{ kitty_xdg_config_home }}/kitty/kitty.conf"
+    owner: "{{ kitty_user }}"
+    group: "{{ kitty_user }}"
+    mode: 0644
+  become: true
+  become_user: "{{ kitty_user }}"
+
+- name: Ensure Argonaut.conf file is in place.
+  ansible.builtin.copy:
+    src: Argonaut.conf
+    dest: "{{ kitty_xdg_config_home }}/kitty/Argonaut.conf"
+    owner: "{{ kitty_user }}"
+    group: "{{ kitty_user }}"
+    mode: 0644
+  become: true
+  become_user: "{{ kitty_user }}"
+
+- name: Ensure symbolic link theme.conf exists.
+  ansible.builtin.file:
+    src: "{{ kitty_xdg_config_home }}/kitty/Argonaut.conf"
+    dest: "{{ kitty_xdg_config_home }}/kitty/theme.conf"
+    owner: "{{ kitty_user }}"
+    group: "{{ kitty_user }}"
+    state: link
+  become: true
+  become_user: "{{ kitty_user }}"

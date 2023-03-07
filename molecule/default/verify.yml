@@ -1,0 +1,65 @@
+---
+- name: Verify
+  hosts: all
+  gather_facts: false
+
+  tasks:
+  - name: Stat kitty configuration directory.
+    ansible.builtin.stat:
+      path: "{{ kitty_xdg_config_home }}/kitty"
+    register: r_stat_kitty_directory
+
+  - name: Assert kitty configuration directory exists with correct ownership.
+    ansible.builtin.assert:
+      that:
+        - r_stat_kitty_directory.stat.isdir is defined
+        - r_stat_kitty_directory.stat.isdir
+        - r_stat_kitty_directory.stat.gr_name is defined
+        - r_stat_kitty_directory.stat.gr_name == "suzanne"
+        - r_stat_kitty_directory.stat.pw_name is defined
+        - r_stat_kitty_directory.stat.pw_name == "suzanne"
+
+  - name: Stat kitty.conf file.
+    ansible.builtin.stat:
+      path: "{{ kitty_xdg_config_home }}/kitty/kitty.conf"
+    register: r_stat_kitty_conf
+
+  - name: Assert kitty.conf file exists with correct ownership.
+    ansible.builtin.assert:
+      that:
+        - r_stat_kitty_conf.stat.exists is defined
+        - r_stat_kitty_conf.stat.exists == true
+        - r_stat_kitty_conf.stat.isdir is defined
+        - r_stat_kitty_conf.stat.isdir == false
+        - r_stat_kitty_conf.stat.gr_name is defined
+        - r_stat_kitty_conf.stat.gr_name == "suzanne"
+        - r_stat_kitty_conf.stat.pw_name is defined
+        - r_stat_kitty_conf.stat.pw_name == "suzanne"
+
+  - name: Cat kitty.conf to stdout
+    ansible.builtin.command:
+      cmd: /bin/cat "{{ kitty_xdg_config_home }}/kitty/kitty.conf"
+    register: r_kitty_conf_stdout
+    changed_when: false
+
+  - name: Debug; show kitty.conf in stdout
+    ansible.builtin.debug:
+      msg: "{{ r_kitty_conf_stdout.stdout_lines }}"
+
+  - name: Assert kitty.conf contains correct font_family line
+    # See: https://stackoverflow.com/questions/38461920/ansible-check-if-string-exists-in-file
+    ansible.builtin.lineinfile:
+      dest: "{{ kitty_xdg_config_home }}/kitty/kitty.conf"
+      line: "font_family my fake kitty font"
+    check_mode: yes
+    register: r_kitty_conf_font_presence
+    failed_when: r_kitty_conf_font_presence.changed
+
+  - name: Assert kitty.conf contains correct wayland_titlebar_color line
+    # See: https://stackoverflow.com/questions/38461920/ansible-check-if-string-exists-in-file
+    ansible.builtin.lineinfile:
+      dest: "{{ kitty_xdg_config_home }}/kitty/kitty.conf"
+      line: "wayland_titlebar_color #00b00f"
+    check_mode: yes
+    register: r_kitty_conf_titlebar_color_presence
+    failed_when: r_kitty_conf_titlebar_color_presence.changed
