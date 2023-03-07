@@ -41,6 +41,7 @@ See: https://github.com/pre-commit/pre-commit
 *Inside `vars/main.yml`*:
 
     kitty_user: johndoe
+    kitty_font: FiraCode Nerd Font Mono
 
 ## License
 
