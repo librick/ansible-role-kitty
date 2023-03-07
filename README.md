@@ -11,7 +11,8 @@ See: [https://github.com/kovidgoyal/kitty](https://github.com/kovidgoyal/kitty)
 ## Role Variables
 See `defaults/main.yml` for a comprehensive list of role variables.  
 Some of the most pertinent variables are:
-- `kitty_user`
+- `kitty_user`  
+- `kitty_font`
 
 ## Dependencies
 I recommend using a Python3 virtual environment (venv).  
