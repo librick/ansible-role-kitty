@@ -9,7 +9,7 @@ See: [https://sw.kovidgoyal.net/kitty/](https://sw.kovidgoyal.net/kitty/)
 See: [https://github.com/kovidgoyal/kitty](https://github.com/kovidgoyal/kitty)
 
 ## Role Variables
-See `defaults/main.yml` for a comprehensive list of role variables.  
+See [defaults/main.yml](./defaults/main.yml) for a comprehensive list of role variables.  
 Some of the most pertinent variables are:
 - `kitty_user`  
 - `kitty_font`
